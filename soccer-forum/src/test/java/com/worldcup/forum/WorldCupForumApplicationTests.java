@@ -1,13 +1,12 @@
-package org.example.soccerforum;
+package com.worldcup.forum;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SoccerForumApplicationTests {
+class WorldCupForumApplicationTests {
 
     @Test
     void contextLoads() {
     }
-
 }

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(mvn -version)",
+      "Bash(mvn dependency:resolve -Dinclude=org.projectlombok:lombok -q)",
+      "Bash(mvn dependency:tree -Dincludes=org.projectlombok:lombok)",
+      "Bash(mvn dependency:tree -Dincludes=com.baomidou:mybatis-plus)",
+      "Bash(mvn dependency:tree)",
+      "Bash(mvn dependency:copy -Dartifact=com.baomidou:mybatis-plus-extension:3.5.9 -DoutputDirectory=./target/deps -q)",
+      "Bash(jar tf *)",
+      "Bash(grep -v \"/$\")"
+    ]
+  }
+}
