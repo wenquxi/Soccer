@@ -15,23 +15,41 @@ MySQL (数据存储) + Redis (限流/缓存)
 text
 src/
 ├── api/              # API 接口层
+
 │   ├── client.js     # axios 实例
+
 │   ├── post.js       # 帖子接口
+
 │   └── reply.js      # 回复接口
+
 ├── components/       # 组件
+
 │   ├── PostList.vue  # 帖子列表
+
 │   ├── PostItem.vue  # 单个帖子
+
 │   ├── PostForm.vue  # 发帖表单
+
 │   ├── ReplyForm.vue # 回复表单
+
 │   └── AdminPanel.vue# 管理员面板
+
 ├── views/            # 页面
+
 │   └── Forum.vue     # 主论坛页面
+
 ├── stores/           # Pinia 状态
+
 │   ├── forum.js      # 论坛状态
+
 │   └── admin.js      # 管理员状态
+
 ├── router/           # 路由配置
+
 ├── utils/            # 工具函数
+
 ├── App.vue
+
 └── main.js
 
 核心页面
@@ -45,30 +63,55 @@ admin store：管理员登录状态、token 管理
 包结构
 text
 com.worldcup.forum/
+
 ├── controller/           # 控制器
+
 │   ├── PostController
+
 │   ├── ReplyController
+
 │   └── AdminController
+
 ├── service/              # 业务逻辑
+
 │   ├── PostService
+
 │   ├── ReplyService
+
 │   └── RateLimitService
+
 ├── mapper/               # MyBatis-Plus
+
 │   ├── PostMapper
+
 │   └── ReplyMapper
+
 ├── entity/               # 实体类
+
 │   ├── Post
+
 │   └── Reply
+
 ├── dto/                  # 数据传输对象
+
 │   ├── request/
+
 │   └── response/
+
 ├── config/               # 配置类
+
 │   ├── WebConfig (CORS)
+
 │   └── RedisConfig
+
 ├── common/               # 通用类
+
 │   ├── Result (统一返回)
+
 │   └── GlobalExceptionHandler
+
 └── utils/                # 工具类
+
 
 &#x20;   ├── IpUtils
 
@@ -116,7 +159,9 @@ is\_deleted	tinyint	软删除
 前端携带Token → 验证Token → 软删除 → 记录日志 → 返回成功
 六、部署架构
 Nginx :80
+
 ├── / → /var/www/forum/dist (前端静态文件)
+
 └── /api → http://localhost:8080 (后端代理)
 Spring Boot :8080 → MySQL :3306 + Redis :6379 暂时够用
 
