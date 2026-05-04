@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 管理员实体 */
 package com.worldcup.forum.entity;
 
 import lombok.Data;

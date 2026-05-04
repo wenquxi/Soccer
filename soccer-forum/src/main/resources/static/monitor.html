@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>论坛服务监控（Actuator + ECharts）</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0f1419; color: #e6edf3; }
+    header { padding: 12px 20px; border-bottom: 1px solid #30363d; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    header h1 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    header .meta { font-size: 12px; color: #8b949e; }
+    header a { color: #58a6ff; text-decoration: none; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; max-width: 1400px; margin: 0 auto; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px; min-height: 280px; }
+    .card h2 { margin: 0 0 8px; font-size: 13px; color: #8b949e; font-weight: 500; padding: 0 8px; }
+    .chart { width: 100%; height: 260px; }
+    .err { color: #f85149; padding: 12px 20px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>世界杯论坛 · 运行时监控</h1>
+  <div class="meta">
+    数据：<a href="/api/monitor/snapshot" target="_blank" rel="noopener">/api/monitor/snapshot</a>
+    · <a href="/actuator/metrics" target="_blank" rel="noopener">/actuator/metrics</a>
+    · <a href="/actuator/health" target="_blank" rel="noopener">/actuator/health</a>
+    · 轮询 2s
+  </div>
+</header>
+<div id="err" class="err" style="display:none"></div>
+<div class="grid">
+  <div class="card"><h2>堆内存已用 / 上限（MB）</h2><div id="c1" class="chart"></div></div>
+  <div class="card"><h2>线程数（live / peak）</h2><div id="c2" class="chart"></div></div>
+  <div class="card"><h2>CPU（进程 / 系统，0–1）</h2><div id="c3" class="chart"></div></div>
+  <div class="card"><h2>非堆已用（MB）· 运行时间（秒）</h2><div id="c4" class="chart"></div></div>
+</div>
+<script>
+(function () {
+  const MAX_POINTS = 60;
+  const times = [];
+  const heapUsed = [];
+  const heapMax = [];
+  const threads = [];
+  const threadsPeak = [];
+  const cpuProc = [];
+  const cpuSys = [];
+  const nonHeap = [];
+  const uptime = [];
+
+  function pushSeries(ts, snap) {
+    const t = new Date(ts).toLocaleTimeString();
+    times.push(t);
+    heapUsed.push(snap.heapUsedMb);
+    heapMax.push(snap.heapMaxMb);
+    threads.push(snap.threadsLive);
+    threadsPeak.push(snap.threadsPeak);
+    cpuProc.push(snap.cpuProcess);
+    cpuSys.push(snap.cpuSystem);
+    nonHeap.push(snap.nonHeapUsedMb);
+    uptime.push(snap.uptimeSeconds);
+    if (times.length > MAX_POINTS) {
+      [times, heapUsed, heapMax, threads, threadsPeak, cpuProc, cpuSys, nonHeap, uptime].forEach(function (arr) { arr.shift(); });
+    }
+  }
+
+  const baseOpt = {
+    backgroundColor: 'transparent',
+    textStyle: { color: '#e6edf3' },
+    grid: { left: 48, right: 24, top: 28, bottom: 36 },
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: times, axisLabel: { color: '#8b949e', fontSize: 10 } },
+    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
+    animationDuration: 200
+  };
+
+  const c1 = echarts.init(document.getElementById('c1'));
+  const c2 = echarts.init(document.getElementById('c2'));
+  const c3 = echarts.init(document.getElementById('c3'));
+  const c4 = echarts.init(document.getElementById('c4'));
+
+  function renderAll() {
+    c1.setOption(Object.assign({}, baseOpt, {
+      legend: { data: ['heapUsedMb', 'heapMaxMb'], textStyle: { color: '#8b949e', fontSize: 11 } },
+      yAxis: { type: 'value', splitLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' } },
+      series: [
+        { name: 'heapUsedMb', type: 'line', smooth: true, showSymbol: false, data: heapUsed, lineStyle: { width: 2, color: '#58a6ff' } },
+        { name: 'heapMaxMb', type: 'line', smooth: true, showSymbol: false, data: heapMax, lineStyle: { width: 1, type: 'dashed', color: '#8b949e' } }
+      ]
+    }), true);
+
+    c2.setOption(Object.assign({}, baseOpt, {
+      legend: { data: ['threadsLive', 'threadsPeak'], textStyle: { color: '#8b949e', fontSize: 11 } },
+      yAxis: { type: 'value', splitLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' } },
+      series: [
+        { name: 'threadsLive', type: 'line', smooth: true, showSymbol: false, data: threads, lineStyle: { width: 2, color: '#3fb950' } },
+        { name: 'threadsPeak', type: 'line', smooth: true, showSymbol: false, data: threadsPeak, lineStyle: { width: 1, type: 'dashed', color: '#d29922' } }
+      ]
+    }), true);
+
+    c3.setOption(Object.assign({}, baseOpt, {
+      legend: { data: ['cpuProcess', 'cpuSystem'], textStyle: { color: '#8b949e', fontSize: 11 } },
+      yAxis: { type: 'value', min: 0, max: 1, splitLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' } },
+      series: [
+        { name: 'cpuProcess', type: 'line', smooth: true, showSymbol: false, data: cpuProc, areaStyle: { opacity: 0.12, color: '#a371f7' }, lineStyle: { width: 2, color: '#a371f7' } },
+        { name: 'cpuSystem', type: 'line', smooth: true, showSymbol: false, data: cpuSys, lineStyle: { width: 2, color: '#f0883e' } }
+      ]
+    }), true);
+
+    c4.setOption(Object.assign({}, baseOpt, {
+      legend: { data: ['nonHeapMb', 'uptimeSec'], textStyle: { color: '#8b949e', fontSize: 11 } },
+      yAxis: [
+        { type: 'value', name: 'MB', splitLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' } },
+        { type: 'value', name: 's', splitLine: { show: false }, axisLabel: { color: '#8b949e' } }
+      ],
+      series: [
+        { name: 'nonHeapMb', type: 'bar', data: nonHeap, itemStyle: { color: '#388bfd' } },
+        { name: 'uptimeSec', type: 'line', yAxisIndex: 1, smooth: true, showSymbol: false, data: uptime, lineStyle: { width: 2, color: '#79c0ff' } }
+      ]
+    }), true);
+  }
+
+  const errEl = document.getElementById('err');
+  async function tick() {
+    try {
+      const r = await fetch('/api/monitor/snapshot', { credentials: 'same-origin' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const snap = await r.json();
+      pushSeries(snap.timestamp, snap);
+      errEl.style.display = 'none';
+      renderAll();
+    } catch (e) {
+      errEl.textContent = '拉取监控数据失败：' + e.message + '（请确认服务已启动且已引入 Actuator）';
+      errEl.style.display = 'block';
+    }
+  }
+
+  tick();
+  setInterval(tick, 2000);
+  window.addEventListener('resize', function () {
+    [c1, c2, c3, c4].forEach(function (c) { c.resize(); });
+  });
+})();
+</script>
+</body>
+</html>

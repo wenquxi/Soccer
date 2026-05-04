@@ -1,3 +1,4 @@
+/** 世界杯论坛 - MyBatis-Plus 分页配置 */
 package com.worldcup.forum.config;
 
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

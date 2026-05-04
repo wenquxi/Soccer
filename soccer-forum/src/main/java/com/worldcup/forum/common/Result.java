@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 统一响应封装 */
 package com.worldcup.forum.common;
 
 import lombok.Data;

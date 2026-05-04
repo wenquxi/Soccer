@@ -9,7 +9,9 @@
       "Bash(mvn dependency:tree)",
       "Bash(mvn dependency:copy -Dartifact=com.baomidou:mybatis-plus-extension:3.5.9 -DoutputDirectory=./target/deps -q)",
       "Bash(jar tf *)",
-      "Bash(grep -v \"/$\")"
+      "Bash(grep -v \"/$\")",
+      "Bash(python3 add_headers.py)",
+      "Bash(/c/Users/文渠星/AppData/Local/Microsoft/WindowsApps/python3 *)"
     ]
   }
 }

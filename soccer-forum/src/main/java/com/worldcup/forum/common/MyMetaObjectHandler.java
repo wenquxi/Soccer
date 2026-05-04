@@ -1,3 +1,4 @@
+/** 世界杯论坛 - MyBatis-Plus 自动填充处理器 */
 package com.worldcup.forum.common;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;

@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 帖子控制器 */
 package com.worldcup.forum.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

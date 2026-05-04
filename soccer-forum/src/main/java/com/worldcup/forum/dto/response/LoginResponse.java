@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 登录响应 */
 package com.worldcup.forum.dto.response;
 
 import lombok.AllArgsConstructor;

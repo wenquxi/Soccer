@@ -1,5 +1,8 @@
+/** 世界杯论坛 - 敏感词过滤工具 */
 package com.worldcup.forum.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -12,8 +15,11 @@ import java.util.Set;
 @Component
 public class SensitiveWordUtils {
 
+    private static final Logger log = LoggerFactory.getLogger(SensitiveWordUtils.class);
+
     private static final Set<String> SENSITIVE_WORDS = new HashSet<>(Arrays.asList(
             // 可根据需要扩展敏感词库
+
     ));
 
     /**
@@ -22,11 +28,16 @@ public class SensitiveWordUtils {
      */
     public boolean containsSensitive(String text) {
         if (text == null || text.isEmpty()) return false;
-        String lower = text.toLowerCase();
-        for (String word : SENSITIVE_WORDS) {
-            if (lower.contains(word)) return true;
+        try {
+            String lower = text.toLowerCase();
+            for (String word : SENSITIVE_WORDS) {
+                if (lower.contains(word)) return true;
+            }
+            return false;
+        } catch (Exception e) {
+            log.warn("敏感词检测异常，按未命中处理: {}", e.getMessage());
+            return false;
         }
-        return false;
     }
 
     /**
@@ -34,10 +45,15 @@ public class SensitiveWordUtils {
      */
     public String filter(String text) {
         if (text == null || text.isEmpty()) return text;
-        String result = text;
-        for (String word : SENSITIVE_WORDS) {
-            result = result.replaceAll("(?i)" + word, "*".repeat(word.length()));
+        try {
+            String result = text;
+            for (String word : SENSITIVE_WORDS) {
+                result = result.replaceAll("(?i)" + java.util.regex.Pattern.quote(word), "*".repeat(word.length()));
+            }
+            return result;
+        } catch (Exception e) {
+            log.warn("敏感词过滤异常，返回原文: {}", e.getMessage());
+            return text;
         }
-        return result;
     }
 }

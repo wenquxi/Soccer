@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 用户登录请求 */
 package com.worldcup.forum.dto.request;
 
 import jakarta.validation.constraints.NotBlank;

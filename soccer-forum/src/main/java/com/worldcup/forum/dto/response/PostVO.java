@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 帖子列表视图 */
 package com.worldcup.forum.dto.response;
 
 import lombok.AllArgsConstructor;

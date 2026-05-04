@@ -1,3 +1,4 @@
+/** 世界杯论坛 - Web 配置 */
 package com.worldcup.forum.config;
 
 import com.worldcup.forum.interceptor.AdminAuthInterceptor;
@@ -23,6 +24,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+        registry.addMapping("/actuator/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }

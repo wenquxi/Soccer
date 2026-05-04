@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 管理员控制器 */
 package com.worldcup.forum.controller;
 
 import com.worldcup.forum.common.Result;
@@ -32,8 +33,14 @@ public class AdminController {
      * 管理员登出
      */
     @PostMapping("/logout")
-    public Result<Void> logout(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
+    public Result<Void> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("未提供有效的 Authorization 头");
+        }
+        String token = authHeader.substring(7).trim();
+        if (token.isEmpty()) {
+            throw new IllegalArgumentException("token 不能为空");
+        }
         adminService.logout(token);
         return Result.success();
     }

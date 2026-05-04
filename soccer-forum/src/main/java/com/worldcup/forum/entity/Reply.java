@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 回复实体 */
 package com.worldcup.forum.entity;
 
 import com.baomidou.mybatisplus.annotation.*;

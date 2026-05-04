@@ -1,8 +1,9 @@
+/** 世界杯论坛 - 帖子服务 */
 package com.worldcup.forum.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.worldcup.forum.aspect.Loggable;
 import com.worldcup.forum.dto.request.PostCreateRequest;
 import com.worldcup.forum.dto.response.PostVO;
 import com.worldcup.forum.dto.response.ReplyVO;
@@ -11,7 +12,6 @@ import com.worldcup.forum.mapper.PostMapper;
 import com.worldcup.forum.utils.IpUtils;
 import com.worldcup.forum.utils.SensitiveWordUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -41,6 +41,7 @@ public class PostService {
     /**
      * 分页查询帖子列表，每帖附带最新5条回复
      */
+    @Loggable("分页查询帖子")
     public Page<PostVO> getPosts(int page, int size) {
         Page<Post> pageRequest = Page.of(page, size);
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<Post>()
@@ -60,6 +61,7 @@ public class PostService {
     /**
      * 发布帖子（含限流检查 + 敏感词过滤）
      */
+    @Loggable("发帖")
     public PostVO createPost(PostCreateRequest request, HttpServletRequest httpRequest) {
         String ip = IpUtils.getClientIp(httpRequest);
         // 限流检查
@@ -83,6 +85,7 @@ public class PostService {
     /**
      * 管理员删除帖子（软删除）
      */
+    @Loggable("删除帖子")
     public void deletePost(Long id) {
         Post post = postMapper.selectById(id);
         if (post == null) {

@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 启动入口 */
 package com.worldcup.forum;
 
 import org.mybatis.spring.annotation.MapperScan;

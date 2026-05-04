@@ -1,3 +1,4 @@
+/** 世界杯论坛 - 应用测试 */
 package com.worldcup.forum;
 
 import org.junit.jupiter.api.Test;

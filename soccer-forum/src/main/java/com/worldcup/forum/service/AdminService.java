@@ -1,7 +1,8 @@
+/** 世界杯论坛 - 管理员服务 */
 package com.worldcup.forum.service;
 
+import com.worldcup.forum.aspect.Loggable;
 import com.worldcup.forum.dto.response.LoginResponse;
-import com.worldcup.forum.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,33 +16,32 @@ public class AdminService {
 
     private final String adminUsername;
     private final String adminPassword;
-    private final JwtUtils jwtUtils;
     private final TokenService tokenService;
 
     public AdminService(@Value("${admin.username}") String adminUsername,
                         @Value("${admin.password}") String adminPassword,
-                        JwtUtils jwtUtils, TokenService tokenService) {
+                        TokenService tokenService) {
         this.adminUsername = adminUsername;
         this.adminPassword = adminPassword;
-        this.jwtUtils = jwtUtils;
         this.tokenService = tokenService;
     }
 
     /**
-     * 管理员登录，生成 token 并存入 Redis
+     * 管理员登录，创建 Redis session
      */
+    @Loggable("管理员登录")
     public LoginResponse login(String username, String password) {
         if (!adminUsername.equals(username) || !adminPassword.equals(password)) {
             throw new IllegalArgumentException("用户名或密码错误");
         }
-        String token = jwtUtils.generateToken(username);
-        tokenService.save(token, username, ROLE_ADMIN);
+        String token = tokenService.createSession(username, ROLE_ADMIN);
         return new LoginResponse(token, username, "管理员", ROLE_ADMIN);
     }
 
     /**
-     * 管理员登出，撤销 token
+     * 管理员登出
      */
+    @Loggable("管理员登出")
     public void logout(String token) {
         tokenService.revoke(token);
     }

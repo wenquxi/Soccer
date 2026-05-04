@@ -1,3 +1,4 @@
+/** 世界杯论坛 - Redis 序列化配置 */
 package com.worldcup.forum.config;
 
 import org.springframework.context.annotation.Bean;
