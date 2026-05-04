@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 世界杯论坛
 
 一款极简的世界杯讨论论坛，用户可自由发帖、回复；管理员可管理内容。
@@ -82,6 +83,72 @@
 ## 三、后端代码结构
 
 ```
+=======
+我准备设计一款极简的网页，用来应对即将到来的世界杯，就一个赛前赛后讨论世界杯的论坛，里面可以自由发帖，自由发言那种，我准备设计一个前端和一个后端，后端有管理员，前端渲染论坛讨论
+一、总体架构
+
+用户浏览器
+↓
+Nginx (代理 + 静态文件)
+↓
+Spring Boot API (端口 8080)
+↓
+MySQL (数据存储) + Redis (限流/缓存)
+
+(暂时小项目用这么点架构够了，还是多想想怎么把项目设计的有趣一点)
+二、前端架构 (Vue 3，还没做,还有用户登录没加)
+目录结构
+text
+src/
+├── api/              # API 接口层
+
+│   ├── client.js     # axios 实例
+
+│   ├── post.js       # 帖子接口
+
+│   └── reply.js      # 回复接口
+
+├── components/       # 组件
+
+│   ├── PostList.vue  # 帖子列表
+
+│   ├── PostItem.vue  # 单个帖子
+
+│   ├── PostForm.vue  # 发帖表单
+
+│   ├── ReplyForm.vue # 回复表单
+
+│   └── AdminPanel.vue# 管理员面板
+
+├── views/            # 页面
+
+│   └── Forum.vue     # 主论坛页面
+
+├── stores/           # Pinia 状态
+
+│   ├── forum.js      # 论坛状态
+
+│   └── admin.js      # 管理员状态
+
+├── router/           # 路由配置
+
+├── utils/            # 工具函数
+
+├── App.vue
+
+└── main.js
+
+核心页面
+Forum.vue：唯一主页面，包含发帖区、帖子列表、回复区
+状态管理
+forum store：帖子列表、加载状态、发帖/回复操作
+admin store：管理员登录状态、token 管理
+
+三、后端架构 (Spring Boot)
+
+包结构
+text
+>>>>>>> baf8ad744ddcd02a84ba81b4bbe49d32677c570a
 com.worldcup.forum/
 ├── WorldCupForumApplication.java         # 启动入口 @MapperScan
 
@@ -175,6 +242,7 @@ com.worldcup.forum/
 
 ### user（用户表）
 
+<<<<<<< HEAD
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | bigint | PK 自增 |
@@ -183,9 +251,14 @@ com.worldcup.forum/
 | nickname | varchar(50) | 显示昵称 |
 | created_at | datetime | 注册时间 |
 | is_deleted | tinyint | 软删除标识 |
+=======
+
+&#x20;   ├── IpUtils
+>>>>>>> baf8ad744ddcd02a84ba81b4bbe49d32677c570a
 
 ---
 
+<<<<<<< HEAD
 ## 五、API 清单
 
 | 方法 | 路径 | 说明 | 认证 |
@@ -355,6 +428,49 @@ GET /api/monitor/snapshot
 ## 八、部署架构
 
 ```
+=======
+API 设计(这里肯定也是不全面的)
+方法	路径	说明
+GET	/api/posts	帖子列表（分页+回复）
+POST	/api/posts	发布帖子
+DELETE	/api/posts/{id}	删除帖子（管理员）
+POST	/api/replies	发布回复
+DELETE	/api/replies/{id}	删除回复（管理员）
+POST	/api/admin/login	管理员登录
+
+四、数据库设计
+表结构
+post (帖子表)
+字段	类型	说明
+id	bigint	PK
+nickname	varchar(50)	昵称
+content	text	内容
+ip	varchar(45)	发布IP
+reply\_count	int	回复数
+created\_at	datetime	创建时间
+is\_deleted	tinyint	软删除
+
+
+
+reply (回复表)
+字段	类型	说明
+id	bigint	PK
+post\_id	bigint	所属帖子
+nickname	varchar(50)	昵称
+content	varchar(500)	内容
+ip	varchar(45)	回复IP
+created\_at	datetime	创建时间
+is\_deleted	tinyint	软删除
+
+五、核心流程
+发帖流程
+前端提交 → 后端接收 → IP限流检查 → 敏感词过滤 → 存入MySQL → 返回成功
+帖子列表加载
+前端请求 → 分页查询帖子 → 批量查询回复（每帖最新5条） → 组装VO → 返回
+管理员删除
+前端携带Token → 验证Token → 软删除 → 记录日志 → 返回成功
+六、部署架构
+>>>>>>> baf8ad744ddcd02a84ba81b4bbe49d32677c570a
 Nginx :80
 ├── / → /var/www/forum/dist          (Vue 打包后的静态文件)
 └── /api → http://localhost:8080     (反向代理到后端)
@@ -364,10 +480,16 @@ Spring Boot :8080
 └── Redis :6379                      (Session + 限流)
 ```
 
+<<<<<<< HEAD
 ---
+=======
+└── /api → http://localhost:8080 (后端代理)
+Spring Boot :8080 → MySQL :3306 + Redis :6379 暂时够用
+>>>>>>> baf8ad744ddcd02a84ba81b4bbe49d32677c570a
 
 ## 九、技术栈
 
+<<<<<<< HEAD
 | 层级 | 技术 |
 |------|------|
 | 前端 | Vue 3 + Vite + Pinia + Axios |
@@ -403,6 +525,16 @@ mysql -u root -p worldcup_forum < soccer-forum/src/main/resources/sql/schema.sql
 #   spring.datasource.username / password（数据库账号）
 #   spring.data.redis（Redis 地址）
 #   admin.username / admin.password（管理员账号）
+=======
+七、技术栈总结
+层级	技术
+前端	Vue 3 + Vite + Pinia + Axios
+后端	Spring Boot 3.x + MyBatis-Plus
+数据库	MySQL 8.0
+缓存/限流	Redis
+八、待设计目标:表情包，内容添加
+部署	Nginx + Jar包
+>>>>>>> baf8ad744ddcd02a84ba81b4bbe49d32677c570a
 
 # 4. 启动后端
 cd soccer-forum
